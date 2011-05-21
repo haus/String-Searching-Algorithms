@@ -38,8 +38,8 @@ class TurboBoyerMoore
     end
   end
   
-#  void TBM(char *x, int m, char *y, int n) {
-/     int bcShift, i, j, shift, u, v, turboShift,
+=begin  void TBM(char *x, int m, char *y, int n) {
+     int bcShift, i, j, shift, u, v, turboShift,
          bmGs[XSIZE], bmBc[ASIZE];
 
      # Preprocessing #
@@ -78,18 +78,18 @@ class TurboBoyerMoore
         j += shift;
      }
   }
-/  
-#  void preBmBc(char *x, int m, int bmBc[]) {
-/     int i;
+  
+  void preBmBc(char *x, int m, int bmBc[]) {
+     int i;
 
      for (i = 0; i < ASIZE; ++i)
         bmBc[i] = m;
      for (i = 0; i < m - 1; ++i)
         bmBc[x[i]] = m - i - 1;
   }
-/
-#  void preBmGs(char *x, int m, int bmGs[]) {
-/     int i, j, suff[XSIZE];
+
+  void preBmGs(char *x, int m, int bmGs[]) {
+     int i, j, suff[XSIZE];
 
      suffixes(x, m, suff);
 
@@ -104,7 +104,7 @@ class TurboBoyerMoore
      for (i = 0; i <= m - 2; ++i)
         bmGs[m - 1 - suff[i]] = m - 1 - i;
   }
-/
+=end
   
 
   def prefix
