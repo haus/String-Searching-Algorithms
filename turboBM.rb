@@ -37,57 +37,75 @@ class TurboBoyerMoore
       puts "First argument should be the data file, second argument should be the search pattern."
     end
   end
+  
+#  void TBM(char *x, int m, char *y, int n) {
+/     int bcShift, i, j, shift, u, v, turboShift,
+         bmGs[XSIZE], bmBc[ASIZE];
 
-  def search
-    totalComps = 0
-    
-    for i in (0..@pattern.length - 1)
-      puts "seaching for pattern ##{i+1} (#{@pattern[i]})"
+     # Preprocessing #
+     preBmGs(x, m, bmGs);
+     preBmBc(x, m, bmBc);
 
-      textPos = 0
-      patternPos = 0
-      comparisons = 0
-      found = false
-    
-      while (textPos + patternPos) < @n
-        #puts @pattern[patternPos].chr << " vs " << @text[textPos + patternPos].chr
-      
-        if ((comparisons = comparisons + 1) and @pattern[i][patternPos] == @text[textPos + patternPos])
-        
-          if patternPos == (@m[i] - 1)
-            found = true
-            puts "word found at " << textPos.to_s
-            patternPos = 0
-            textPos = textPos + @m[i]
-          end
-        
-          patternPos = patternPos + 1
-      
-        else
-      
-          textPos = textPos + patternPos - @pi[i][patternPos]
-      
-          if @pi[i][patternPos] > -1
-            patternPos = @pi[i][patternPos]
-          else
-            patternPos = 0
-          end
-      
-        end
-    
-      end
-    
-      if (!found)
-        puts "word not found"
-      end
-    
-      puts "number of comparisons: " << comparisons.to_s
-      totalComps = totalComps + comparisons
-    end
-    
-    puts "total number of comparisons: " << totalComps.to_s
-    
-  end
+     # Searching #
+     j = u = 0;
+     shift = m;
+     while (j <= n - m) {
+        i = m - 1;
+        while (i >= 0 && x[i] == y[i + j]) {
+           --i;
+           if (u != 0 && i == m - 1 - shift)
+              i -= u;
+        }
+        if (i < 0) {
+           OUTPUT(j);
+           shift = bmGs[0];
+           u = m - shift;
+        }
+        else {
+           v = m - 1 - i;
+           turboShift = u - v;
+           bcShift = bmBc[y[i + j]] - m + 1 + i;
+           shift = MAX(turboShift, bcShift);
+           shift = MAX(shift, bmGs[i]);
+           if (shift == bmGs[i])
+              u = MIN(m - shift, v);
+           else {
+             if (turboShift < bcShift)
+                shift = MAX(shift, u + 1);
+             u = 0;
+           }
+        }
+        j += shift;
+     }
+  }
+/  
+#  void preBmBc(char *x, int m, int bmBc[]) {
+/     int i;
+
+     for (i = 0; i < ASIZE; ++i)
+        bmBc[i] = m;
+     for (i = 0; i < m - 1; ++i)
+        bmBc[x[i]] = m - i - 1;
+  }
+/
+#  void preBmGs(char *x, int m, int bmGs[]) {
+/     int i, j, suff[XSIZE];
+
+     suffixes(x, m, suff);
+
+     for (i = 0; i < m; ++i)
+        bmGs[i] = m;
+     j = 0;
+     for (i = m - 1; i >= 0; --i)
+        if (suff[i] == i + 1)
+           for (; j < m - 1 - i; ++j)
+              if (bmGs[j] == m)
+                 bmGs[j] = m - 1 - i;
+     for (i = 0; i <= m - 2; ++i)
+        bmGs[m - 1 - suff[i]] = m - 1 - i;
+  }
+/
+  
 
   def prefix
     for i in (0..@pattern.length - 1)
@@ -122,4 +140,4 @@ end
 tbm = TurboBoyerMoore.new
 tbm.setup(ARGV[0], ARGV[1])
 #tbm.printPi
-tbm.search
+tbm˝.search
