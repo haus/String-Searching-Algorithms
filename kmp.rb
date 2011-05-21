@@ -24,7 +24,7 @@ class KnuthMorrisPratt
     
       # Now load the pattern
       File.open(sourcePattern, "r").each_line do |curLine|
-        if (curLine and curLine.chomp)
+        if (curLine and curLine.chomp and curLine.chomp.length > 0)
           @pattern[line] = curLine.chomp
           @m[line] = @pattern[line].length
           line = line + 1
