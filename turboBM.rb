@@ -81,7 +81,7 @@ class TurboBoyerMoore
       
       for j in ((@m[i].length - 2)..0)
         if (j > g and @suff[i][j + @m[i].length - 1 - f] < (j - g))
-          @suff[i][j] = @suff[i][j + @m[i].length -1 - f]
+          @suff[i][j] = @suff[i][j + @m[i].length - 1 - f]
         else
           if (j < g)
             g = j
@@ -129,12 +129,13 @@ class TurboBoyerMoore
       
       for j in (@m[i].length - 1..0)
         if (@suff[i][j] == (j + 1))
-          for k.upto(@m[i].length - 1 - j)
+          k.upto(@m[i].length - 1 - j) {
             if @good[i][k] == @m[i].length
               @good[i][k] = @m[i].length - 1 -j
             end
-          end
+          }
         end
+      end
         
       for j in (0..@m[i].length - 2)
         @good[i][@m[i].length - 1 - @suff[i][j]] = @m[i].length - 1 - j
@@ -260,5 +261,4 @@ end
 
 tbm = TurboBoyerMoore.new
 tbm.setup(ARGV[0], ARGV[1])
-#tbm.printPi
 tbm.search
