@@ -38,7 +38,8 @@ class TurboBoyerMoore
   
       @n = @text.length
       puts @pattern.to_set.length.chr
-      #gPrefix
+      getSuffix
+      gPrefix
       bPrefix
     else
       puts "First argument should be the data file, second argument should be the search pattern."
@@ -120,8 +121,24 @@ class TurboBoyerMoore
     for i in (0..@pattern.length - 1)
       @good[i] = Array.new
       
+      for j in (0..@m[i].length - 1)
+        @good[i][j] = @m[i].length
+      end
       
+      k = 0
       
+      for j in (@m[i].length - 1..0)
+        if (@suff[i][j] == (j + 1))
+          for k.upto(@m[i].length - 1 - j)
+            if @good[i][k] == @m[i].length
+              @good[i][k] = @m[i].length - 1 -j
+            end
+          end
+        end
+        
+      for j in (0..@m[i].length - 2)
+        @good[i][@m[i].length - 1 - @suff[i][j]] = @m[i].length - 1 - j
+      end
     end
   end
   
@@ -155,6 +172,48 @@ class TurboBoyerMoore
     end
   end
   
+  def search
+    for i in (0..@pattern.length - 1)
+      j = 0
+      u = 0
+      
+      shift = @m[i].length
+      
+      while j <= (@n.length - @m[i].length)
+        k = @m[i].length - 1
+        
+        while (k >= 0 and @pattern[i][k] == @text[k + j])
+          k -= 1
+          
+          if (u != 0 and k == (@m[i].length - 1 - shift))
+            k -= u
+          end
+        end
+        
+        if (k < 0)
+          puts "match found at #{j}"
+          shift = @good[i][0]
+          u = @m[i].length - shift
+        else
+          v = @m[i].length -1 - k
+          turboShift = u - v
+          bcShift = @bad[i][@text[k + j]] - @m[i].length + 1 + k
+          shift = [turboShift, bcShift, @good[i][k]].max
+          
+          if (shift == @good[i][k])
+            u = [@m[i].length - shift, v].min
+          else
+            if (turboShift < bcShift)
+              shift = [shift, u + 1].max
+            end
+            u = 0
+          end
+        end
+        
+        j += shift
+        
+      end
+    end
 =begin
   void TBM(char *x, int m, char *y, int n) {
     int bcShift, i, j, shift, u, v, turboShift,
@@ -196,39 +255,10 @@ class TurboBoyerMoore
      }
   }
 =end
-  
-
-  def prefix
-    for i in (0..@pattern.length - 1)
-      # Initialization of @pi
-      @pi[i] = [-1, 0]
-      pos = 2
-      cnd = 0
-  
-      while (pos < @m[i])
-        if @pattern[i][pos - 1] == @pattern[i][cnd]
-          cnd = cnd + 1
-          @pi[i][pos] = cnd
-          pos = pos + 1
-        elsif cnd > 0
-          cnd = @pi[i][cnd]
-        else
-          @pi[i][pos] = 0
-          pos = pos + 1
-        end
-      end
-    end
   end
-  
-  def printPi
-    for i in (0..@pi.length - 1)
-      puts i.to_s << " in pi is " << @pi[i].to_s
-    end
-  end
-  
 end
 
 tbm = TurboBoyerMoore.new
 tbm.setup(ARGV[0], ARGV[1])
 #tbm.printPi
-#tbm.search
+tbm.search
