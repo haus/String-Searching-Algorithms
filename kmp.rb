@@ -42,7 +42,7 @@ class KnuthMorrisPratt
     end
     
     if (!found)
-      puts "word not found"
+      puts "search string not found"
     end
   
     puts "#{comparisons} comparisons were used in this search"
