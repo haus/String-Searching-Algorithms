@@ -33,30 +33,10 @@ class TurboBoyerMoore
     end
   end
   
-=begin
-    void suffixes(char *x, int m, int *suff) {
-       int f, g, i;
-
-       suff[m - 1] = m;
-       g = m - 1;
-       for (i = m - 2; i >= 0; --i) {
-          if (i > g && suff[i + m - 1 - f] < i - g)
-             suff[i] = suff[i + m - 1 - f];
-          else {
-             if (i < g)
-                g = i;
-             f = i;
-             while (g >= 0 && x[g] == x[g + m - 1 - f])
-                --g;
-             suff[i] = f - g;
-          }
-       }
-    }
-=end
   def suffix
     @suff[@m - 1] = @m
     g = @m - 1
-    f = 0#2**(32)-1
+    f = 0
     
     (@m - 2).downto(0) do |i|
       if (i > g and @suff[i + @m - 1 - f] < (i - g))
@@ -77,24 +57,6 @@ class TurboBoyerMoore
     end
   end
   
-=begin
-  void preBmGs(char *x, int m, int bmGs[]) {
-     int i, j, suff[XSIZE];
-
-     suffixes(x, m, suff);
-
-     for (i = 0; i < m; ++i)
-        bmGs[i] = m;
-     j = 0;
-     for (i = m - 1; i >= 0; --i)
-        if (suff[i] == i + 1)
-           for (; j < m - 1 - i; ++j)
-              if (bmGs[j] == m)
-                 bmGs[j] = m - 1 - i;
-     for (i = 0; i <= m - 2; ++i)
-        bmGs[m - 1 - suff[i]] = m - 1 - i;
-  }
-=end
   def gPrefix
     @good = Array.new
     
@@ -119,16 +81,6 @@ class TurboBoyerMoore
     end
   end
     
-=begin
-    void preBmBc(char *x, int m, int bmBc[]) {
-       int i;
-
-       for (i = 0; i < ASIZE; ++i)
-          bmBc[i] = m;
-       for (i = 0; i < m - 1; ++i)
-          bmBc[x[i]] = m - i - 1;
-    }
-=end
   def bPrefix
     @bad = Hash.new
     @alpha = Set.new
@@ -152,47 +104,6 @@ class TurboBoyerMoore
     end
   end
 
-=begin
-  void TBM(char *x, int m, char *y, int n) {
-    int bcShift, i, j, shift, u, v, turboShift,
-        bmGs[XSIZE], bmBc[ASIZE];
-
-    # Preprocessing #
-    preBmGs(x, m, bmGs);
-    preBmBc(x, m, bmBc);
-
-    # Searching #
-    j = u = 0;
-    shift = m;
-    while (j <= n - m) {
-      i = m - 1;
-      while (i >= 0 && x[i] == y[i + j]) {
-         --i;
-         if (u != 0 && i == m - 1 - shift)
-            i -= u;
-      }
-      if (i < 0) {
-         OUTPUT(j);
-         shift = bmGs[0];
-         u = m - shift;
-      } else {
-         v = m - 1 - i;
-         turboShift = u - v;
-         bcShift = bmBc[y[i + j]] - m + 1 + i;
-         shift = MAX(turboShift, bcShift);
-         shift = MAX(shift, bmGs[i]);
-         if (shift == bmGs[i])
-            u = MIN(m - shift, v);
-         else {
-           if (turboShift < bcShift)
-              shift = MAX(shift, u + 1);
-           u = 0;
-         }
-      }
-      j += shift;
-     }
-  }
-=end
   def search
     comparisons = 0
     found = false
@@ -204,7 +115,7 @@ class TurboBoyerMoore
     while j <= (@n - @m)
       i = @m - 1
       
-      while ((comparisons += 1) and i >= 0 and @pattern[i] == @text[i + j])
+      while (i >= 0 and (comparisons += 1) and @pattern[i] == @text[i + j])
         i -= 1
         
         if (u != 0 and i == (@m - 1 - shift))
@@ -241,44 +152,8 @@ class TurboBoyerMoore
       puts "search string not found"
     end
     
-    puts "#{comparisons} were used in this search"
+    puts "#{comparisons} comparisons were used in this search"
     
     return comparisons
   end
 end
-
-text = String.new
-pattern = Array.new
-line = 0
-
-# Check that the files exist
-if (ARGV[0] and ARGV[1] and File.file?(ARGV[0]) and File.file?(ARGV[1]))
-  # First load the text into a string
-  File.open(ARGV[0], "r").each_line do |curLine|
-    if (curLine and curLine.chomp)
-      text << curLine.chomp
-    end
-  end
-
-  # Now load the pattern
-  File.open(ARGV[1], "r").each_line do |curLine|
-    if (curLine and curLine.chomp and curLine.chomp.length > 0)
-      pattern[line] = curLine.chomp
-      line += 1
-    end
-  end
-else
-  puts "First argument should be the data file, second argument should be the search pattern."
-end
-
-total = 0
-
-pattern.each_with_index do |patt, i|
-  puts "Search ##{i+1}: searching text for #{patt}"
-  tbm = TurboBoyerMoore.new
-  tbm.setup(text, patt)
-  total += tbm.search
-end
-
-puts "total number of comparisons: " << total.to_s
-
