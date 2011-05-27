@@ -5,7 +5,6 @@ class TurboBoyerMoore
     @text = String.new
     @pattern = Array.new
     @suff = Array.new
-    @debug = false
     @m
     @n
   end
@@ -20,17 +19,6 @@ class TurboBoyerMoore
     suffix
     gPrefix
     bPrefix
-    if @debug
-      @suff.each_with_index do |suffix, i|
-        puts "Suffix #{i} is #{suffix}"
-      end
-      @good.each_with_index do |gd, i|
-        puts "Good #{i} is #{gd}"
-      end
-      @bad.each do |key, val|
-        puts "Bad #{key} is #{val}"
-      end
-    end
   end
   
   def suffix
@@ -87,12 +75,6 @@ class TurboBoyerMoore
     
     0.upto(@n - 1) do |i|
       @alpha.add(@text[i].chr)
-    end
-    
-    if @debug
-      @alpha.each_with_index do |a, i|
-        puts "Element #{i} is #{a}"
-      end
     end
     
     @alpha.each_with_index do |a, i|

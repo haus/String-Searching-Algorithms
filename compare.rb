@@ -11,6 +11,7 @@ Dir.new(basedir).entries.each do |file|
     textFile = "#{basedir}/#{file}"
     index = file[1].chr
     patternFile = "#{basedir}/p#{index}.txt"
+    puts "Running test set ##{index}\n"
 
     text = String.new
     pattern = Array.new
@@ -53,8 +54,8 @@ Dir.new(basedir).entries.each do |file|
     end
 
     puts "Turbo Boyer-Moore used #{totalTBM} total comparisons (#{totalTBM/pattern.size} average)"
-  end
     
-  puts "\n\n\n"
+    puts "\n\n\n"
+  end
 
 end
